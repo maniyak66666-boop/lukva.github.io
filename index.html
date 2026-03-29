@@ -3,803 +3,1489 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LukVA — музыкальный продюсер. Создание музыки, биты, аранжировка. Закажите качественный звук для вашего трека.">
+    <meta name="keywords" content="биты, создание музыки, аранжировка, trap, хип-хоп, продюсер, музыка">
+    <meta name="author" content="LukVA">
     <title>LukVA | Music Producer</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --secondary: #06b6d4;
+            --accent: #f472b6;
+            --bg-dark: #0a0a0f;
+            --bg-card: #151520;
+            --bg-card-hover: #1e1e2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --gradient: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #f472b6 100%);
+            --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.3);
+            --shadow-card: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: #fff;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
             overflow-x: hidden;
         }
-        
-        header {
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-circle {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(139, 92, 246, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 10, 15, 0.98);
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 5%;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
         }
-        
+
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #e94560;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-decoration: none;
+            position: relative;
         }
-        
-        nav {
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 2rem;
+            list-style: none;
         }
-        
-        nav a {
-            color: #fff;
+
+        .nav-links a {
+            color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
         }
-        
-        nav a:hover {
-            color: #e94560;
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
-        
-        .menu-toggle {
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::before {
+            transform: scaleX(1);
+        }
+
+        .mobile-menu-btn {
             display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
             font-size: 1.5rem;
             cursor: pointer;
+            z-index: 1001;
         }
-        
+
+        /* Hero Section */
         .hero {
-            padding: 150px 5% 100px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            padding: 8rem 2rem 4rem;
+            background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .hero h1 {
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease;
+            text-shadow: 0 0 60px rgba(139, 92, 246, 0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .btn {
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: var(--text-primary);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .section-title {
             font-size: 3rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #e94560, #ff6b6b);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        .hero p {
-            font-size: 1.3rem;
-            color: #aaa;
-            margin-bottom: 30px;
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background: var(--gradient);
+            border-radius: 3px;
         }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 15px 30px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #e94560, #ff6b6b);
-            color: #fff;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: #e94560;
-            border: 2px solid #e94560;
-        }
-        
-        .btn-secondary:hover {
-            background: #e94560;
-            color: #fff;
-        }
-        
-        .section {
-            padding: 80px 5%;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-            color: #e94560;
-        }
-        
-        .services-grid {
+
+        /* Music Section */
+        .music-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
         }
-        
-        .service-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+        .music-card {
+            background: var(--bg-card);
+            border-radius: 25px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+        .music-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 0;
         }
-        
-        .service-card img {
+
+        .music-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(139, 92, 246, 0.3);
+            border-color: var(--primary);
+        }
+
+        .music-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .music-card img {
             width: 100%;
-            height: 200px;
+            height: 320px;
             object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
-        
-        .service-card h3 {
-            color: #e94560;
-            margin-bottom: 10px;
-            font-size: 1.3rem;
+
+        .music-card-content {
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
-        
-        .service-card p {
-            color: #aaa;
-            margin-bottom: 20px;
+
+        .music-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
-        
-        .service-card audio {
+
+        .music-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .audio-player {
             width: 100%;
-            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
         }
-        
-        .license-warning {
-            background: rgba(233, 69, 96, 0.1);
-            border: 2px solid #e94560;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 800px;
-            margin: 50px auto;
+
+        .audio-player audio {
+            width: 100%;
+            border-radius: 10px;
+            filter: invert(0.9);
+        }
+
+        .audio-error {
+            color: #f472b6;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .audio-error.show {
+            display: block;
+        }
+
+        /* License Notice */
+        .license-notice {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
             text-align: center;
+            box-shadow: var(--shadow-glow);
         }
-        
-        .license-warning h3 {
-            color: #e94560;
-            margin-bottom: 15px;
+
+        .license-notice h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        
-        .license-warning p {
-            color: #aaa;
-            line-height: 1.6;
+
+        .license-notice p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
         }
-        
-        .license-warning .warning {
-            color: #ff6b6b;
-            font-weight: bold;
-            margin-top: 15px;
+
+        .license-notice .warning {
+            color: #f472b6;
+            font-weight: 600;
+            margin-top: 1rem;
+            display: block;
         }
-        
+
+        /* FAQ Section */
+        .faq-section {
+            background: var(--bg-card);
+            padding: 6rem 2rem;
+        }
+
+        .faq-section .section-title {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+
         .faq-container {
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .faq-item {
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-dark);
             border-radius: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
         }
-        
+
+        .faq-item:hover {
+            border-color: var(--primary);
+        }
+
         .faq-question {
-            padding: 20px;
+            padding: 1.5rem 2rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.3s;
-        }
-        
-        .faq-question:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .faq-question h4 {
-            color: #e94560;
-        }
-        
-        .faq-answer {
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s;
-            color: #aaa;
-            line-height: 1.6;
-        }
-        
-        .faq-item.active .faq-answer {
-            padding: 0 20px 20px;
-            max-height: 500px;
-        }
-        
-        .playlists-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .playlist-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-        }
-        
-        .playlist-card:hover {
-            border-color: #e94560;
-            transform: translateY(-5px);
-        }
-        
-        .playlist-card a {
-            color: #e94560;
-            text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+            transition: all 0.3s ease;
             font-size: 1.1rem;
         }
-        
+
+        .faq-question:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .faq-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            padding: 0 2rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 2rem 1.5rem;
+            max-height: 500px;
+        }
+
+        /* VK Playlists Section */
+        .vk-playlists {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border-radius: 30px;
+            padding: 4rem;
+            text-align: center;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .vk-playlists p {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            font-size: 1.2rem;
+        }
+
+        .playlist-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .playlist-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1.2rem 2.5rem;
+            background: var(--bg-card);
+            border-radius: 50px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            font-weight: 600;
+        }
+
+        .playlist-link:hover {
+            border-color: var(--primary);
+            background: var(--bg-card-hover);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .playlist-link svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--primary);
+        }
+
+        /* Order Form Section */
         .order-form {
-            max-width: 600px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 4rem;
+            max-width: 700px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-card);
         }
-        
+
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 2rem;
         }
-        
+
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #e94560;
-            font-weight: bold;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
-        
+
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            padding: 1.2rem;
+            background: var(--bg-dark);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-family: inherit;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
         }
-        
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #e94560;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
         }
-        
+
         .form-group textarea {
-            min-height: 120px;
+            min-height: 150px;
             resize: vertical;
         }
-        
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+
+        .form-group select {
             cursor: pointer;
-            color: #aaa;
         }
-        
-        .radio-group input[type="radio"] {
-            width: auto;
-            accent-color: #e94560;
-        }
-        
+
         .submit-btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #e94560, #ff6b6b);
-            color: #fff;
+            padding: 1.5rem;
+            background: var(--gradient);
+            color: var(--text-primary);
             border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
+
         .submit-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.5);
         }
-        
+
         .submit-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-        
-        .form-message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
+
+        .form-note {
             text-align: center;
-            display: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 1.5rem;
+            font-style: italic;
         }
-        
-        .form-message.success {
-            background: rgba(46, 204, 113, 0.2);
-            border: 1px solid #2ecc71;
-            color: #2ecc71;
-            display: block;
+
+        /* Contact Options */
+        .contact-options {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
         }
-        
-        .form-message.error {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid #e74c3c;
-            color: #e74c3c;
-            display: block;
+
+        .contact-option {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--bg-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(139, 92, 246, 0.3);
         }
-        
+
+        .contact-option svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--primary);
+        }
+
+        /* About Section */
         .about-content {
-            max-width: 800px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 4rem;
+            text-align: center;
+            max-width: 900px;
             margin: 0 auto;
-            text-align: center;
-            line-height: 1.8;
-            color: #aaa;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: var(--shadow-card);
         }
-        
-        footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 40px 5%;
-            text-align: center;
+
+        .about-content p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            line-height: 2;
+            margin-bottom: 2rem;
         }
-        
+
         .social-links {
             display: flex;
+            gap: 1.5rem;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
+            margin-top: 2.5rem;
         }
-        
-        .social-links a {
-            color: #e94560;
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: color 0.3s;
+
+        .social-link {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(139, 92, 246, 0.3);
         }
-        
-        .social-links a:hover {
-            color: #ff6b6b;
+
+        .social-link:hover {
+            background: var(--primary);
+            transform: translateY(-8px) rotate(360deg);
+            box-shadow: var(--shadow-glow);
+            border-color: var(--primary);
         }
-        
-        .copyright {
-            color: #666;
+
+        .social-link svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--text-primary);
         }
-        
-        .scroll-top {
+
+        /* Floating Contact Button */
+        .floating-contact {
             position: fixed;
             bottom: 30px;
             right: 30px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .floating-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.7);
+        }
+
+        .floating-menu {
+            display: none;
+            flex-direction: column;
+            gap: 0.8rem;
+            animation: slideUp 0.3s ease;
+        }
+
+        .floating-menu.active {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating-menu a {
             width: 50px;
             height: 50px;
-            background: #e94560;
             border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: white;
+            font-size: 1.3rem;
+            text-decoration: none;
+        }
+
+        .floating-menu a:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
-            z-index: 999;
+            transition: all 0.3s ease;
+            z-index: 998;
+            font-size: 1.2rem;
         }
-        
-        .scroll-top.visible {
+
+        .back-to-top.visible {
             opacity: 1;
             visibility: visible;
         }
-        
-        .scroll-top:hover {
-            background: #ff6b6b;
+
+        .back-to-top:hover {
+            background: var(--primary);
             transform: translateY(-5px);
+            box-shadow: var(--shadow-glow);
         }
-        
+
+        /* Footer */
+        footer {
+            background: var(--bg-card);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        footer p {
+            color: var(--text-secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            nav {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(0, 0, 0, 0.95);
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background: var(--bg-card);
                 flex-direction: column;
-                padding: 20px;
-                gap: 15px;
+                padding: 6rem 2rem 2rem;
+                gap: 1.5rem;
+                transition: right 0.3s ease;
+                border-left: 2px solid rgba(139, 92, 246, 0.3);
             }
-            
-            nav.active {
-                display: flex;
+
+            .nav-links.active {
+                right: 0;
             }
-            
-            .menu-toggle {
+
+            .mobile-menu-btn {
                 display: block;
             }
-            
-            .hero h1 {
-                font-size: 2rem;
+
+            .hero-content h1 {
+                font-size: 3rem;
             }
-            
-            .hero-buttons {
-                flex-direction: column;
-                align-items: center;
+
+            .hero-content p {
+                font-size: 1.2rem;
             }
-            
+
             .section-title {
-                font-size: 1.8rem;
+                font-size: 2.2rem;
             }
-            
-            .order-form {
-                padding: 25px;
+
+            .order-form,
+            .about-content,
+            .vk-playlists {
+                padding: 2.5rem 1.5rem;
             }
+
+            .floating-contact {
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .back-to-top {
+                bottom: 20px;
+                left: 20px;
+            }
+
+            .license-notice {
+                padding: 1.5rem;
+            }
+
+            .license-notice h4 {
+                font-size: 1.1rem;
+            }
+
+            .license-notice p {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10b981;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #10b981;
+            font-weight: 600;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .success-message.show {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="#" class="logo">LukVA</a>
-        <nav id="navMenu">
-            <a href="#music">Треки</a>
-            <a href="#vk-playlists">Плейлисты VK</a>
-            <a href="#order">Заказ</a>
-            <a href="#about">Обо мне</a>
-        </nav>
-        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-    </header>
+    <!-- Loading Animation -->
+    <div class="loader" id="loader">
+        <div class="loader-circle"></div>
+    </div>
 
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">LukVA</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#music">Треки</a></li>
+                <li><a href="#vk-playlists">Плейлисты VK</a></li>
+                <li><a href="#order">Заказ</a></li>
+                <li><a href="#about">Обо мне</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
     <section class="hero">
-        <h1>LukVA</h1>
-        <p>Создание музыки • Биты • Аранжировка</p>
-        <div class="hero-buttons">
-            <a href="#music" class="btn btn-primary">🎵 Слушать треки</a>
-            <a href="#order" class="btn btn-secondary">📝 Заказать музыку</a>
+        <div class="hero-content">
+            <h1>LukVA</h1>
+            <p>Создание музыки • Биты • Аранжировка</p>
+            <div class="hero-buttons">
+                <a href="#music" class="btn btn-primary">🎵 Слушать треки</a>
+                <a href="#order" class="btn btn-secondary"> Заказать музыку</a>
+            </div>
         </div>
     </section>
 
-    <section class="section" id="music">
-        <h2 class="section-title">Примеры работ</h2>
-        <div class="services-grid">
-            <div class="service-card">
+    <!-- Music Section -->
+    <section id="music">
+        <h2 class="section-title fade-in">Примеры работ</h2>
+        <div class="music-grid">
+            <div class="music-card fade-in">
                 <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/189a937dc-747f-4251-a1c4-b2feeace4770.png" alt="Праздники и корпоративы">
-                <h3>🎉 На праздники и корпоративы</h3>
-                <p>Энергичная музыка для мероприятий</p>
-                <audio controls>
-                    <source src="music/Praz.mp3" type="audio/mpeg">
-                    Ваш браузер не поддерживает аудио элемент.
-                </audio>
+                <div class="music-card-content">
+                    <h3>🎉 На праздники и корпоративы</h3>
+                    <p>Энергичная музыка для мероприятий</p>
+                    <div class="audio-player">
+                        <audio controls preload="none" class="track-audio" data-track="praz">
+                            <source src="music/Praz.mp3" type="audio/mpeg">
+                            Ваш браузер не поддерживает аудио элемент.
+                        </audio>
+                        <p class="audio-error">⚠️ Файл не найден. Проверьте наличие music/praz.mp3</p>
+                    </div>
+                </div>
             </div>
-            
-            <div class="service-card">
-                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/177caeffe-88b1-4f58-a73d-3e11e6724179.png" alt="Стихи и тексты">
-                <h3>📝 Оживи свои стихи и не только</h3>
-                <p>Музыкальное сопровождение для стихов и текстов</p>
-                <audio controls>
-                    <source src="music/Stih.mp3" type="audio/mpeg">
-                    Ваш браузер не поддерживает аудио элемент.
-                </audio>
+
+            <div class="music-card fade-in">
+                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/177caeffe-88b1-4f58-a73d-3e11e6724179.png" alt="Оживи свои стихи">
+                <div class="music-card-content">
+                    <h3>📝 Оживи свои стихи и не только</h3>
+                    <p>Музыкальное сопровождение для стихов и текстов</p>
+                    <div class="audio-player">
+                        <audio controls preload="none" class="track-audio" data-track="stih">
+                            <source src="music/Stih.mp3" type="audio/mpeg">
+                            Ваш браузер не поддерживает аудио элемент.
+                        </audio>
+                        <p class="audio-error">⚠️ Файл не найден. Проверьте наличие music/stih.mp3</p>
+                    </div>
+                </div>
             </div>
-            
-            <div class="service-card">
-                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/19c0083ae-9451-4c75-ab46-3b38416dcc77.png" alt="Саундтреки">
-                <h3>🎬 Саундтрек для вашего проекта</h3>
-                <p>Музыка для видео, игр, рекламы и подкастов</p>
-                <audio controls>
-                    <source src="music/Proe.mp3" type="audio/mpeg">
-                    Ваш браузер не поддерживает аудио элемент.
-                </audio>
+
+            <div class="music-card fade-in">
+                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/19c0083ae-9451-4c75-ab46-3b38416dcc77.png" alt="Саундтрек для проекта">
+                <div class="music-card-content">
+                    <h3>🎬 Саундтрек для вашего проекта</h3>
+                    <p>Музыка для видео, игр, рекламы и подкастов</p>
+                    <div class="audio-player">
+                        <audio controls preload="none" class="track-audio" data-track="proe">
+                            <source src="music/Proe.mp3" type="audio/mpeg">
+                            Ваш браузер не поддерживает аудио элемент.
+                        </audio>
+                        <p class="audio-error">⚠️ Файл не найден. Проверьте наличие music/proe.mp3</p>
+                    </div>
+                </div>
             </div>
-            
-            <div class="service-card">
-                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/10a417041-1fa6-425c-974e-848146a132d8.png" alt="Для артистов">
-                <h3>🎤 Уникальный звук для артиста</h3>
-                <p>Индивидуальный стиль и звучание для музыкантов</p>
-                <audio controls>
-                    <source src="music/Arti.mp3" type="audio/mpeg">
-                    Ваш браузер не поддерживает аудио элемент.
-                </audio>
+
+            <div class="music-card fade-in">
+                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/10a417041-1fa6-425c-974e-848146a132d8.png" alt="Уникальный звук для артиста">
+                <div class="music-card-content">
+                    <h3>🎤 Уникальный звук для артиста</h3>
+                    <p>Индивидуальный стиль и звучание для музыкантов</p>
+                    <div class="audio-player">
+                        <audio controls preload="none" class="track-audio" data-track="arti">
+                            <source src="music/Arti.mp3" type="audio/mpeg">
+                            Ваш браузер не поддерживает аудио элемент.
+                        </audio>
+                        <p class="audio-error">⚠️ Файл не найден. Проверьте наличие music/arti.mp3</p>
+                    </div>
+                </div>
             </div>
-            
-            <div class="service-card">
-                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/1054b39f1-7ec4-4e1a-828e-ecbfa200e987.png" alt="День рождения">
-                <h3>🎂 На День рождения</h3>
-                <p>Персональные песни и поздравления для именинника</p>
-                <audio controls>
-                    <source src="music/Dr.mp3" type="audio/mpeg">
-                    Ваш браузер не поддерживает аудио элемент.
-                </audio>
+
+            <div class="music-card fade-in">
+                <img src="https://image.qwenlm.ai/public_source/5248e021-0af9-45a2-9b24-aac0fa4077f4/1054b39f1-7ec4-4e1a-828e-ecbfa200e987.png" alt="На День рождения">
+                <div class="music-card-content">
+                    <h3>🎂 На День рождения</h3>
+                    <p>Персональные песни и поздравления для именинника</p>
+                    <div class="audio-player">
+                        <audio controls preload="none" class="track-audio" data-track="dr">
+                            <source src="music/Dr.mp3" type="audio/mpeg">
+                            Ваш браузер не поддерживает аудио элемент.
+                        </audio>
+                        <p class="audio-error">⚠️ Файл не найден. Проверьте наличие music/dr.mp3</p>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="license-warning">
-            <h3>⚠️ Важная информация о лицензировании</h3>
-            <p>Вся музыка, представленная на сайте и созданная по заказу, предназначена только для личного прослушивания. Любое коммерческое использование (публикация на стриминговых платформах, использование в рекламе, монетизация на YouTube и т.д.) требует приобретения соответствующей лицензии и согласования с автором.</p>
-            <p class="warning">🚫 Без приобретённой лицензии коммерческое использование запрещено!</p>
+
+        <!-- License Notice -->
+        <div class="license-notice fade-in">
+            <h4>⚠️ Важная информация о лицензировании</h4>
+            <p>Вся музыка, представленная на сайте и созданная по заказу, предназначена <strong>только для личного прослушивания</strong>. Любое коммерческое использование (публикация на стриминговых платформах, использование в рекламе, монетизация на YouTube и т.д.) требует приобретения соответствующей лицензии и согласования с автором.</p>
+            <span class="warning">🚫 Без приобретённой лицензии коммерческое использование запрещено!</span>
         </div>
     </section>
 
-    <section class="section" id="faq">
-        <h2 class="section-title">Частые вопросы</h2>
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <h2 class="section-title fade-in">Частые вопросы</h2>
         <div class="faq-container">
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>Как происходит работа?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>Как происходит работа?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <p>Вы оставляете заявку, мы обсуждаем детали и ваши пожелания. Я создаю демо, вы слушаете и вносите правки. После утверждения вы получаете готовый трек в нужных форматах.</p>
                 </div>
             </div>
-            
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>Какие сроки выполнения?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>Какие сроки выполнения?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <p>Создание музыки — от 5 до 10 дней в зависимости от сложности. Возможен срочный заказ за дополнительную плату.</p>
                 </div>
             </div>
-            
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>Сколько стоит создание музыки?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>Сколько стоит создание музыки?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <p>Стоимость создания музыки — от 2000₽, в зависимости от сложности и ваших пожеланий. Точную цену обсудим индивидуально.</p>
                 </div>
             </div>
-            
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>Как оплатить?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>Как оплатить?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <p>Принимаю оплату на карту Сбербанка. Все детали обсудим в личной переписке после согласования заказа.</p>
                 </div>
             </div>
-            
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>Можно ли внести правки?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>Можно ли внести правки?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
                     <p>Да! В стоимость включены правки. Обсуждаем все изменения в процессе работы, чтобы результат полностью соответствовал вашим ожиданиям.</p>
                 </div>
             </div>
-            
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>В каких случаях работа может быть не завершена?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>В каких случаях работа может быть не завершена?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
-                    <p>К сожалению, существуют обстоятельства, которые могут повлиять на выполнение заказа:<br>
-                    • Технические проблемы (сбой оборудования, повреждение файлов)<br>
-                    • Блокировка программного обеспечения для создания музыки из-за санкций<br>
-                    • Отключение доступа к необходимым сервисам и библиотекам<br>
-                    • Форс-мажорные обстоятельства (болезнь, отключение электричества, интернета)<br><br>
-                    В таких случаях я обязуюсь предупредить заказчика как можно раньше и предложить варианты решения (возврат предоплаты, передача материалов, поиск альтернативы).</p>
+                    <p>К сожалению, существуют обстоятельства, которые могут повлиять на выполнение заказа:</p>
+                    <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+                        <li>Технические проблемы (сбой оборудования, повреждение файлов)</li>
+                        <li>Блокировка программного обеспечения для создания музыки из-за санкций</li>
+                        <li>Отключение доступа к необходимым сервисам и библиотекам</li>
+                        <li>Форс-мажорные обстоятельства (болезнь, отключение электричества, интернета)</li>
+                    </ul>
+                    <p style="margin-top: 1rem; color: var(--text-secondary);">В таких случаях я обязуюсь предупредить заказчика как можно раньше и предложить варианты решения (возврат предоплаты, передача материалов, поиск альтернативы).</p>
                 </div>
             </div>
-            
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFaq(this)">
-                    <h4>Можно ли использовать музыку для коммерции?</h4>
-                    <span>+</span>
+            <div class="faq-item fade-in">
+                <div class="faq-question">
+                    <span>Можно ли использовать музыку для коммерции?</span>
+                    <span class="faq-icon">+</span>
                 </div>
                 <div class="faq-answer">
-                    <p>Базовая стоимость включает только личное использование (прослушивание, демо). Для коммерческого использования (релиз на стримингах, YouTube, реклама) необходимо приобрести расширенную лицензию. Условия и стоимость обсуждаются индивидуально в зависимости от типа использования.</p>
+                    <p>Базовая стоимость включает только <strong>личное использование</strong> (прослушивание, демо). Для коммерческого использования (релиз на стримингах, YouTube, реклама) необходимо приобрести расширенную лицензию. Условия и стоимость обсуждаются индивидуально в зависимости от типа использования.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="section" id="vk-playlists">
-        <h2 class="section-title">Мои плейлисты во ВКонтакте</h2>
-        <p style="text-align: center; color: #aaa; margin-bottom: 30px;">Слушай все треки в удобном формате</p>
-        <div class="playlists-grid">
-            <div class="playlist-card">
-                <a href="https://vk.com/audio?z=audio_playlist28409530_2" target="_blank">Первый плейлист</a>
-            </div>
-            <div class="playlist-card">
-                <a href="https://vk.com/audio?z=audio_playlist28409530_1" target="_blank">Второй плейлист</a>
+    <!-- VK Playlists Section -->
+    <section id="vk-playlists">
+        <h2 class="section-title fade-in">Мои плейлисты во ВКонтакте</h2>
+        <div class="vk-playlists fade-in">
+            <p>Слушай все треки в удобном формате</p>
+            <div class="playlist-links">
+                <a href="https://vk.com/audio?z=audio_playlist28409530_2" target="_blank" rel="noopener noreferrer" class="playlist-link">
+                    <svg viewBox="0 0 24 24"><path d="M15.684 2H8.316C4.728 2 2 4.728 2 8.316v7.368C2 19.272 4.728 22 8.316 22h7.368C19.272 22 22 19.272 22 15.684V8.316C22 4.728 19.272 2 15.684 2zm3.692 13.38c.196.196.384.384.48.384h.72c.12 0 .216.072.264.168.072.168.048.408.048.408s-.024.36-.336.552c-.288.168-.636.228-.948.228h-.876s-.396.024-.756-.12c-.312-.132-.552-.36-.552-.36s-.132-.144-.3-.144c-.168 0-.3.144-.3.144s-.372.468-1.032.624c-.6.144-1.116.024-1.116.024s-.24-.048-.24-.324v-.72s.012-.24.144-.348c.132-.108.312-.144.312-.144h.48s.228.012.396-.156c.156-.144.168-.42.168-.42s.024-.504-.228-.768c-.228-.252-.66-.324-.66-.324h-1.2s-.204-.012-.276.12c-.084.144-.036.396-.036.396s.012.468.216.792c.234.36.702.69.702.69s.372.288.864.288c.456 0 .804-.252.804-.252s.42-.3.456-.768c.036-.432-.12-.744-.12-.744s-.12-.372-.348-.576c-.192-.176-.564-.228-.564-.228h-.576s-.192-.012-.288.12c-.108.132-.048.348-.048.348s.036.408.24.624c.18.192.564.264.564.264h.288s.276.024.432-.096c.144-.096.156-.288.156-.288v-1.62s-.012-.296-.18-.449c-.18-.168-.522-.18-.522-.18h-.756s-.324.012-.588.144c-.234.12-.42.312-.42.312s-.408.42-.456.972c-.048.6.12 1.356.12 1.356s.072.348.336.528c.234.156.504.168.504.168h.768s.468.036.864-.144c.432-.204.768-.54.768-.54s.156-.168.36-.168c.192 0 .312.144.312.144s.36.468.78.708c.432.252.768.264.768.264h.78s.396.012.6-.24c.192-.232.216-.624.216-.624s.012-.288-.132-.444c-.132-.156-.396-.204-.396-.204h-.348s-.264-.036-.456.12c-.18.156-.276.408-.276.408s-.036.228.12.384z"/></svg>
+                    Первый плейлист
+                </a>
+                <a href="https://vk.com/audio?z=audio_playlist28409530_1" target="_blank" rel="noopener noreferrer" class="playlist-link">
+                    <svg viewBox="0 0 24 24"><path d="M15.684 2H8.316C4.728 2 2 4.728 2 8.316v7.368C2 19.272 4.728 22 8.316 22h7.368C19.272 22 22 19.272 22 15.684V8.316C22 4.728 19.272 2 15.684 2zm3.692 13.38c.196.196.384.384.48.384h.72c.12 0 .216.072.264.168.072.168.048.408.048.408s-.024.36-.336.552c-.288.168-.636.228-.948.228h-.876s-.396.024-.756-.12c-.312-.132-.552-.36-.552-.36s-.132-.144-.3-.144c-.168 0-.3.144-.3.144s-.372.468-1.032.624c-.6.144-1.116.024-1.116.024s-.24-.048-.24-.324v-.72s.012-.24.144-.348c.132-.108.312-.144.312-.144h.48s.228.012.396-.156c.156-.144.168-.42.168-.42s.024-.504-.228-.768c-.228-.252-.66-.324-.66-.324h-1.2s-.204-.012-.276.12c-.084.144-.036.396-.036.396s.012.468.216.792c.234.36.702.69.702.69s.372.288.864.288c.456 0 .804-.252.804-.252s.42-.3.456-.768c.036-.432-.12-.744-.12-.744s-.12-.372-.348-.576c-.192-.176-.564-.228-.564-.228h-.576s-.192-.012-.288.12c-.108.132-.048.348-.048.348s.036.408.24.624c.18.192.564.264.564.264h.288s.276.024.432-.096c.144-.096.156-.288.156-.288v-1.62s-.012-.296-.18-.449c-.18-.168-.522-.18-.522-.18h-.756s-.324.012-.588.144c-.234.12-.42.312-.42.312s-.408.42-.456.972c-.048.6.12 1.356.12 1.356s.072.348.336.528c.234.156.504.168.504.168h.768s.468.036.864-.144c.432-.204.768-.54.768-.54s.156-.168.36-.168c.192 0 .312.144.312.144s.36.468.78.708c.432.252.768.264.768.264h.78s.396.012.6-.24c.192-.232.216-.624.216-.624s.012-.288-.132-.444c-.132-.156-.396-.204-.396-.204h-.348s-.264-.036-.456.12c-.18.156-.276.408-.276.408s-.036.228.12.384z"/></svg>
+                    Второй плейлист
+                </a>
             </div>
         </div>
     </section>
 
-    <section class="section" id="order">
-        <h2 class="section-title">Заказать музыку</h2>
-        <form class="order-form" id="orderForm">
+    <!-- Order Section -->
+    <section id="order">
+        <h2 class="section-title fade-in">Заказать музыку</h2>
+        <form class="order-form fade-in" id="orderForm">
             <div class="form-group">
                 <label for="name">Имя *</label>
-                <input type="text" id="name" name="name" required placeholder="Ваше имя">
+                <input type="text" id="name" name="name" placeholder="Ваше имя" required>
             </div>
-            
             <div class="form-group">
                 <label for="contact">Контакт (Telegram / Email / VK) *</label>
-                <input type="text" id="contact" name="contact" required placeholder="@username или email">
-            </div>
-            
-            <div class="form-group">
-                <label>Тип связи</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="contact_type" value="Telegram" checked> Telegram</label>
-                    <label><input type="radio" name="contact_type" value="ВКонтакте"> ВКонтакте</label>
-                    <label><input type="radio" name="contact_type" value="Email"> ✉️ Email</label>
+                <input type="text" id="contact" name="contact" placeholder="@username, email или ссылка на VK" required>
+                <div class="contact-options">
+                    <span class="contact-option">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.46-.42-1.4-.88.03-.24.37-.49 1.03-.74 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.64-1.88 5.17-1.88.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.03.24z"/></svg>
+                        Telegram
+                    </span>
+                    <span class="contact-option">
+                        <svg viewBox="0 0 24 24"><path d="M15.684 2H8.316C4.728 2 2 4.728 2 8.316v7.368C2 19.272 4.728 22 8.316 22h7.368C19.272 22 22 19.272 22 15.684V8.316C22 4.728 19.272 2 15.684 2z"/></svg>
+                        ВКонтакте
+                    </span>
+                    <span class="contact-option">✉️ Email</span>
                 </div>
             </div>
-            
             <div class="form-group">
                 <label for="service">Тип услуги</label>
                 <select id="service" name="service">
-                    <option value="Создание музыки — от 2000₽">Создание музыки — от 2000₽</option>
-                    <option value="Аранжировка">Аранжировка</option>
-                    <option value="Бит">Бит</option>
-                    <option value="Саундтрек">Саундтрек</option>
-                    <option value="Песня на заказ">Песня на заказ</option>
-                    <option value="Другое">Другое</option>
+                    <option value="music" selected>Создание музыки — от 2000₽</option>
                 </select>
             </div>
-            
             <div class="form-group">
                 <label for="description">Описание / Референсы</label>
-                <textarea id="description" name="description" placeholder="Опишите вашу идею, стиль, референсы..."></textarea>
+                <textarea id="description" name="description" placeholder="Опишите вашу идею, добавьте ссылки на референсы..."></textarea>
             </div>
-            
             <button type="submit" class="submit-btn" id="submitBtn">Отправить заявку</button>
-            
-            <div class="form-message success" id="successMessage">
+            <p class="form-note">✨ И я свяжусь с вами в ближайшее время</p>
+            <div class="success-message" id="successMessage">
                 ✅ Заявка успешно отправлена! Я свяжусь с вами в ближайшее время.
             </div>
-            <div class="form-message error" id="errorMessage">
-                ❌ Ошибка отправки. Попробуйте позже или свяжитесь напрямую.
-            </div>
         </form>
-        <p style="text-align: center; margin-top: 20px; color: #e94560;">✨ И я свяжусь с вами в ближайшее время</p>
     </section>
 
-    <section class="section" id="about">
-        <h2 class="section-title">Обо мне</h2>
-        <div class="about-content">
-            <p>Привет! Я LukVA — музыкальный продюсер, специализируюсь на создании музыки в различных стилях. Работаю с артистами разного уровня, помогаю воплотить музыкальные идеи в жизнь. Готов к сотрудничеству и новым проектам!</p>
+    <!-- About Section -->
+    <section id="about">
+        <h2 class="section-title fade-in">Обо мне</h2>
+        <div class="about-content fade-in">
+            <p>Привет! Я <strong>LukVA</strong> — музыкальный продюсер, специализируюсь на создании музыки в различных стилях. Работаю с артистами разного уровня, помогаю воплотить музыкальные идеи в жизнь. Готов к сотрудничеству и новым проектам!</p>
+            <div class="social-links">
+                <a href="https://vk.com" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="ВКонтакте">
+                    <svg viewBox="0 0 24 24"><path d="M15.684 2H8.316C4.728 2 2 4.728 2 8.316v7.368C2 19.272 4.728 22 8.316 22h7.368C19.272 22 22 19.272 22 15.684V8.316C22 4.728 19.272 2 15.684 2zm3.692 13.38c.196.196.384.384.48.384h.72c.12 0 .216.072.264.168.072.168.048.408.048.408s-.024.36-.336.552c-.288.168-.636.228-.948.228h-.876s-.396.024-.756-.12c-.312-.132-.552-.36-.552-.36s-.132-.144-.3-.144c-.168 0-.3.144-.3.144s-.372.468-1.032.624c-.6.144-1.116.024-1.116.024s-.24-.048-.24-.324v-.72s.012-.24.144-.348c.132-.108.312-.144.312-.144h.48s.228.012.396-.156c.156-.144.168-.42.168-.42s.024-.504-.228-.768c-.228-.252-.66-.324-.66-.324h-1.2s-.204-.012-.276.12c-.084.144-.036.396-.036.396s.012.468.216.792c.234.36.702.69.702.69s.372.288.864.288c.456 0 .804-.252.804-.252s.42-.3.456-.768c.036-.432-.12-.744-.12-.744s-.12-.372-.348-.576c-.192-.176-.564-.228-.564-.228h-.576s-.192-.012-.288.12c-.108.132-.048.348-.048.348s.036.408.24.624c.18.192.564.264.564.264h.288s.276.024.432-.096c.144-.096.156-.288.156-.288v-1.62s-.012-.296-.18-.449c-.18-.168-.522-.18-.522-.18h-.756s-.324.012-.588.144c-.234.12-.42.312-.42.312s-.408.42-.456.972c-.048.6.12 1.356.12 1.356s.072.348.336.528c.234.156.504.168.504.168h.768s.468.036.864-.144c.432-.204.768-.54.768-.54s.156-.168.36-.168c.192 0 .312.144.312.144s.36.468.78.708c.432.252.768.264.768.264h.78s.396.012.6-.24c.192-.232.216-.624.216-.624s.012-.288-.132-.444c-.132-.156-.396-.204-.396-.204h-.348s-.264-.036-.456.12c-.18.156-.276.408-.276.408s-.036.228.12.384z"/></svg>
+                </a>
+                <a href="https://t.me" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Telegram">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.46-.42-1.4-.88.03-.24.37-.49 1.03-.74 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.64-1.88 5.17-1.88.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.03.24z"/></svg>
+                </a>
+            </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <div class="social-links">
-            <a href="https://vk.com" target="_blank">VK</a>
-            <a href="https://t.me" target="_blank">TG</a>
-        </div>
-        <p class="copyright">© 2026 LukVA. Все права защищены.</p>
+        <p>&copy; 2026 LukVA. Все права защищены.</p>
     </footer>
 
-    <div class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</div>
+    <!-- Floating Contact Button -->
+    <div class="floating-contact">
+        <div class="floating-menu" id="floatingMenu">
+            <a href="https://vk.com" target="_blank" rel="noopener noreferrer" title="ВКонтакте">VK</a>
+            <a href="https://t.me" target="_blank" rel="noopener noreferrer" title="Telegram">TG</a>
+        </div>
+        <button class="floating-btn" id="floatingBtn" aria-label="Связаться">💬</button>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Наверх">↑</button>
 
     <script>
-        function toggleMenu() {
-            document.getElementById('navMenu').classList.toggle('active');
+        // Loading Animation
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+            }, 500);
+        });
+
+        // Create Floating Particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
         }
 
-        function toggleFaq(element) {
-            const item = element.parentElement;
-            item.classList.toggle('active');
-            const span = element.querySelector('span');
-            span.textContent = item.classList.contains('active') ? '−' : '+';
-        }
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
 
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+        });
 
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuBtn.textContent = '☰';
+            });
+        });
+
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
-            const scrollTop = document.getElementById('scrollTop');
-            if (window.scrollY > 500) {
-                scrollTop.classList.add('visible');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
             } else {
-                scrollTop.classList.remove('visible');
+                navbar.classList.remove('scrolled');
             }
         });
 
-        // Форма отправки в Telegram
-        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+        // Scroll Animation
+        const fadeElements = document.querySelectorAll('.fade-in');
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        fadeElements.forEach(element => {
+            observer.observe(element);
+        });
+
+        // Audio Player - Mobile Compatible + Only One Track at a Time
+        const audioPlayers = document.querySelectorAll('.track-audio');
+
+        audioPlayers.forEach(player => {
+            // Show error if file fails to load
+            player.addEventListener('error', () => {
+                const errorMsg = player.parentElement.querySelector('.audio-error');
+                if (errorMsg) {
+                    errorMsg.classList.add('show');
+                }
+                console.error('Ошибка загрузки аудио:', player.querySelector('source').src);
+            });
+
+            // Stop other tracks when this one plays
+            player.addEventListener('play', () => {
+                audioPlayers.forEach(otherPlayer => {
+                    if (otherPlayer !== player && !otherPlayer.paused) {
+                        otherPlayer.pause();
+                    }
+                });
+            });
+
+            // Mobile: Log playing state for debugging
+            player.addEventListener('playing', () => {
+                console.log('Audio playing:', player.dataset.track);
+            });
+
+            player.addEventListener('pause', () => {
+                console.log('Audio paused:', player.dataset.track);
+            });
+        });
+
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+
+                // Close all items
+                faqItems.forEach(faq => faq.classList.remove('active'));
+
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Form Submission
+        const orderForm = document.getElementById('orderForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        orderForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const successMessage = document.getElementById('successMessage');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            successMessage.classList.remove('success');
-            errorMessage.classList.remove('error');
-            
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Отправка...';
-            
-            const formData = new FormData(this);
-            
+
+            // Simulate form submission
             try {
-                const response = await fetch('telegram.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    successMessage.classList.add('success');
-                    this.reset();
-                } else {
-                    errorMessage.classList.add('error');
-                }
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Show success message
+                successMessage.classList.add('show');
+                orderForm.reset();
+
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    successMessage.classList.remove('show');
+                }, 5000);
             } catch (error) {
-                errorMessage.classList.add('error');
+                console.error('Ошибка отправки:', error);
+                alert('Произошла ошибка при отправке. Пожалуйста, попробуйте снова.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Отправить заявку';
             }
         });
 
+        // Floating Contact Menu
+        const floatingBtn = document.getElementById('floatingBtn');
+        const floatingMenu = document.getElementById('floatingMenu');
+
+        floatingBtn.addEventListener('click', () => {
+            floatingMenu.classList.toggle('active');
+        });
+
+        // Close floating menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!floatingBtn.contains(e.target) && !floatingMenu.contains(e.target)) {
+                floatingMenu.classList.remove('active');
+            }
+        });
+
+        // Back to Top Button
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                    document.getElementById('navMenu').classList.remove('active');
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
             });
         });
