@@ -1462,6 +1462,7 @@
                 }
             });
         });
+// Обработка формы через Formspree
 document.getElementById('telegramForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -1473,28 +1474,31 @@ document.getElementById('telegramForm').addEventListener('submit', function(e) {
     button.disabled = true;
     button.textContent = 'Отправка...';
     successMsg.classList.remove('show');
-    errorMsg.classList.remove('show');  // ✅ Исправлено
+    errorMsg.classList.remove('show');
 
     const formData = new FormData(form);
 
-    fetch('telegram.php', {
+    // 🔁 ВСТАВЬТЕ СЮДА ВАШ FORMSPREE ID
+    fetch('https://formspree.io/f/xqegpgka', {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data?.success) {
+    .then(response => {
+        if (response.ok) {
             successMsg.classList.add('show');
             errorMsg.classList.remove('show');
             form.reset();
         } else {
-            errorMsg.classList.add('show');  // ✅ Исправлено
+            errorMsg.classList.add('show');
             successMsg.classList.remove('show');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        errorMsg.classList.add('show');  // ✅ Исправлено
+        errorMsg.classList.add('show');
     })
     .finally(() => {
         button.disabled = false;
