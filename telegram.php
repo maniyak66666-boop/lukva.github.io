@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1); // Удалить после настройки!
 
-$token = "8338610711:AAHVcw3y4uiNl8HdgZ8K3YClNAaN3_1-Zro"; 
+$token = "8338610711:AAF35TG91X74XW1k4gVSbzbGcq4ZYyzr50A"; 
 $chat_id = "1358915788";
 
 header('Content-Type: application/json; charset=utf-8');
