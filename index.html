@@ -1223,45 +1223,47 @@
     </section>
 
     <!-- Order Section -->
-    <section id="order">
-        <h2 class="section-title fade-in">Заказать музыку</h2>
-        <form class="order-form fade-in" id="orderForm">
-            <div class="form-group">
-                <label for="name">Имя *</label>
-                <input type="text" id="name" name="name" placeholder="Ваше имя" required>
-            </div>
-            <div class="form-group">
-                <label for="contact">Контакт (Telegram / Email / VK) *</label>
-                <input type="text" id="contact" name="contact" placeholder="@username, email или ссылка на VK" required>
-                <div class="contact-options">
-                    <span class="contact-option">
-                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.46-.42-1.4-.88.03-.24.37-.49 1.03-.74 4.04-1.76 6.74-2.92 8.09-3.48 3.85-1.6 4.64-1.88 5.17-1.88.11 0 .37.03.54.17.14.12.18.28.2.45-.02.07-.02.13-.03.24z"/></svg>
-                        Telegram
-                    </span>
-                    <span class="contact-option">
-                        <svg viewBox="0 0 24 24"><path d="M15.684 2H8.316C4.728 2 2 4.728 2 8.316v7.368C2 19.272 4.728 22 8.316 22h7.368C19.272 22 22 19.272 22 15.684V8.316C22 4.728 19.272 2 15.684 2z"/></svg>
-                        ВКонтакте
-                    </span>
-                    <span class="contact-option">✉️ Email</span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="service">Тип услуги</label>
-                <select id="service" name="service">
-                    <option value="music" selected>Создание музыки — от 2000₽</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="description">Описание / Референсы</label>
-                <textarea id="description" name="description" placeholder="Опишите вашу идею, добавьте ссылки на референсы..."></textarea>
-            </div>
-            <button type="submit" class="submit-btn" id="submitBtn">Отправить заявку</button>
-            <p class="form-note">✨ И я свяжусь с вами в ближайшее время</p>
-            <div class="success-message" id="successMessage">
-                ✅ Заявка успешно отправлена! Я свяжусь с вами в ближайшее время.
-            </div>
-        </form>
-    </section>
+ <!-- Вставьте это вместо вашей текущей формы в разделе #order -->
+<form id="telegramForm" class="ваш-класс-формы-если-был">
+    <div class="form-group">
+        <label>Имя *</label>
+        <input type="text" name="name" required placeholder="Ваше имя">
+    </div>
+    
+    <div class="form-group">
+        <label>Контакт (Telegram / Email / VK) *</label>
+        <input type="text" name="contact" required placeholder="@username или телефон">
+    </div>
+
+    <div class="form-group">
+        <label>Тип связи</label>
+        <select name="contact_type">
+            <option value="Telegram">Telegram</option>
+            <option value="ВКонтакте">ВКонтакте</option>
+            <option value="Email">✉️ Email</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Тип услуги</label>
+        <input type="text" name="service" value="Создание музыки — от 2000₽">
+    </div>
+
+    <div class="form-group">
+        <label>Описание / Референсы</label>
+        <textarea name="description" rows="4" placeholder="Опишите задачу"></textarea>
+    </div>
+
+    <button type="submit">Отправить заявку</button>
+    
+    <!-- Блоки для сообщений об успехе/ошибке -->
+    <div id="successMessage" style="display:none; color: green; margin-top: 10px;">
+        ✅ Заявка успешно отправлена! Я свяжусь с вами в ближайшее время.
+    </div>
+    <div id="errorMessage" style="display:none; color: red; margin-top: 10px;">
+        ❌ Ошибка отправки. Попробуйте позже или напишите напрямую.
+    </div>
+</form>
 
     <!-- About Section -->
     <section id="about">
