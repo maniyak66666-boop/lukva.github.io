@@ -1491,6 +1491,44 @@
                 }
             });
         });
+document.getElementById('telegramForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Предотвращаем перезагрузку страницы
+    
+    const form = this;
+    const successMsg = document.getElementById('successMessage');
+    const errorMsg = document.getElementById('errorMessage');
+    const button = form.querySelector('button');
+    
+    // Блокируем кнопку
+    button.disabled = true;
+    button.textContent = 'Отправка...';
+    successMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
+
+    const formData = new FormData(form);
+
+    fetch('telegram.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            successMsg.style.display = 'block';
+            form.reset();
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        errorMsg.style.display = 'block';
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.textContent = 'Отправить заявку';
+    });
+});
     </script>
 </body>
 </html>
