@@ -1,8 +1,8 @@
 <?php
 // telegram.php - Обработчик формы для отправки в Telegram
 
-$token = 8338610711:AAHVcw3y4uiNl8HdgZ8K3YClNAaN3_1-Zro;
-$chat_id = 1358915788;
+$token = "8338610711:AAHVcw3y4uiNl8HdgZ8K3YClNAaN3_1-Zro";
+$chat_id = "1358915788";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = htmlspecialchars($_POST['name']);
