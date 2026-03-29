@@ -2,8 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$token = "ВАШ_НОВЫЙ_ТОКЕН";
-$chat_id = "ВАШ_CHAT_ID";
+$token = "8338610711:AAF35TG91X74XW1k4gVSbzbGcq4ZYyzr50A";
+$chat_id = "1358915788";
 
 // Проверка токена
 $url = "https://api.telegram.org/bot{$token}/getMe";
